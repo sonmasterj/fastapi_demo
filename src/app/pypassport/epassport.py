@@ -314,6 +314,11 @@ class EPassport(dict, logger.Logger):
         @return: A sod object.
         """
         return self["SecurityData"]
+    def getDG13(self):
+        try:
+            return self["DG13"]
+        except Exception:
+            return None
     
     def readCom(self):
         """
@@ -377,6 +382,9 @@ class EPassport(dict, logger.Logger):
         or have a look to the pypassport.datagroup.converter.py file       
         """
         self.log("getitem " + tag)
+        if(tag=="63" or tag=="61"):
+            print("no access")
+            raise Exception("error read security")
         tag = converter.toTAG(tag)
         print(tag)
         self.log("getitem converted " + tag)
@@ -423,11 +431,11 @@ class EPassport(dict, logger.Logger):
             self.log("Reading " + converter.toDG(tag))
             
             dgFile = self._dgReader.readDG(tag)
-            self.log("File " + str(dgFile))
+            # self.log("File " + str(dgFile))
             dg = datagroup.DataGroupFactory().create(dgFile)
-            self.log("DG " + str(dg))
+            # self.log("DG " + str(dg))
             self.__setitem__(dg.tag, dg) 
-            print("done sdfew")
+            # print("done sdfew")
             return dg
         except IOError as msg:
             # self.log("Reading error: " + str(msg))
